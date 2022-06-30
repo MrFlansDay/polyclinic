@@ -47,6 +47,7 @@ namespace Окна3 {
                 textInput.Phone(ref phone);
                 textInput.Draw_phone(phone);
             }
+            
         }
         public override void Draw() {
             base.Draw();

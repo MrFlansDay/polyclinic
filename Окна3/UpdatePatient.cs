@@ -13,13 +13,13 @@ namespace Окна3 {
         private static readonly string _signUpConnectionString = ConfigurationManager.ConnectionStrings["Patients"].ConnectionString;
         private static SqlConnection sqlConnection = new SqlConnection(_signUpConnectionString);
 
-        public static bool registry(string FIO, string StartTime, string EndTime) {
+        public static bool registry(string FIO, string StartTime, string EndTime, string StartTime2 = "", string EndTime2 = "", string FIO2 = "") {
             sqlConnection.Open();
 
-            if (CheckUser(ref FIO, ref StartTime, ref EndTime, StartTime, EndTime)) {
+            if (CheckUser(ref FIO, ref StartTime, ref EndTime, ref StartTime2, ref EndTime2)) {
                 SqlCommand sqlCommand2 = new SqlCommand($"SELECT Id FROM Patients WHERE StartTime = '{StartTime}' AND EndTime = '{EndTime}'", sqlConnection);
                 string id = sqlCommand2.ExecuteScalar().ToString();
-                SqlCommand sqlCommand = new SqlCommand($"UPDATE Patients SET StartTime = '{StartTime}', EndTime = '{EndTime}', FIO = '{FIO}' " +
+                SqlCommand sqlCommand = new SqlCommand($"UPDATE Patients SET StartTime = '{StartTime2}', EndTime = '{EndTime2}', FIO = '{FIO2}' " +
                     $"WHERE Id = '{id}'", sqlConnection);
                 
                 if (sqlCommand.ExecuteNonQuery() == 1) {
@@ -37,19 +37,41 @@ namespace Окна3 {
             sqlConnection.Close();
             return false;
         }
-        public static bool CheckUser(ref string FIO, ref string StartTime, ref string EndTime, string StartTime1, string EndTime1) {
-            try {
-                bool ItsTrue = CheckTime(StartTime1, EndTime1);
-                ConvertTime(ref StartTime, ref EndTime);
+        public static bool CheckUser(ref string FIO, ref string StartTime, ref string EndTime, ref string StartTime1, ref string EndTime1) {
+            if (StartTime.Count() == 5) {
 
-                if (!ItsTrue) {
+
+                try {
+                    bool ItsTrue = CheckTime(StartTime1, EndTime1);
+                    ConvertTime(ref StartTime1, ref EndTime1);
+
+                    if (!ItsTrue) {
+                        return false;
+                    }
+                    return true;
+                }
+                catch {
                     return false;
                 }
-                return true;
+            } else {
+                /*StartTime = StartTime[0].ToString() + StartTime[1] + ':' + StartTime[2] + StartTime[3];
+                EndTime = EndTime[0].ToString() + EndTime[1] + ':' + EndTime[2] + EndTime[3];
+                StartTime1 = StartTime1[0].ToString() + StartTime1[1] + ':' + StartTime1[2] + StartTime1[3];
+                EndTime1 = EndTime1[0].ToString() + EndTime1[1] + ':' + EndTime1[2] + EndTime1[3];*/
+                try {
+                    bool ItsTrue = CheckTime(StartTime1, EndTime1);
+                    ConvertTime(ref StartTime1, ref EndTime1);
+
+                    if (!ItsTrue) {
+                        return false;
+                    }
+                    return true;
+                }
+                catch {
+                    return false;
+                }
             }
-            catch {
-                return false;
-            }
+            
         }
         public static void ConvertTime(ref string StartTime, ref string EndTime) {
             StartTime = StartTime[0].ToString() + StartTime[1] + StartTime[3] + StartTime[4];

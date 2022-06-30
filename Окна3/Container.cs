@@ -85,7 +85,7 @@ namespace Окна3 {
                  return action2;
             }*/
         }
-        public bool signUp(string Who) {
+        public bool signUp(string Who, string StartTime = "", string EndTime = "", string FIO = "", string StartTime2 = "", string EndTime2 = "", string FIO2 = "") {
             getData();
             if (Who == "Doctor") {
                 try {
@@ -107,7 +107,7 @@ namespace Окна3 {
             }
             else {
                 try {
-                    return UpdatePatient.registry(texts[0], texts[1], texts[2]);
+                    return UpdatePatient.registry(FIO, StartTime, EndTime, texts[1], texts[2], texts[0]);
                 }
                 catch {
                     return false;

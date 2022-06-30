@@ -17,8 +17,8 @@ namespace Окна3 {
         public bool signIn(/*Action action, Action action2*/) {
             return container.signIn(/*action, action2*/);
         }
-        public bool signUp(string Who = "Doctor") {
-            return container.signUp(Who);
+        public bool signUp(string Who = "Doctor", string StartTime = "", string EndTime = "", string FIO = "", string StartTime2 = "", string EndTime2 = "", string FIO2 = "") {
+            return container.signUp(Who, StartTime, EndTime, FIO, StartTime2, EndTime2, FIO2);
         }
         public void getData() {
             container.getData();

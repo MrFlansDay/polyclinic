@@ -10,19 +10,20 @@ using System.Text.RegularExpressions;
 
 namespace Окна3 {
     internal class SignUpPatient {
-        private static int id = 10;
         private static readonly string _signUpConnectionString = ConfigurationManager.ConnectionStrings["Patients"].ConnectionString;
         private static SqlConnection sqlConnection = new SqlConnection(_signUpConnectionString);
 
         public static bool registry(string FIO, string StartTime, string EndTime) {
             sqlConnection.Open();
-
+            if (StartTime.Count() == 4) StartTime = "0" + StartTime;
+            if (EndTime.Count() == 4) EndTime = "0" + EndTime;
             if (CheckUser(ref FIO, ref StartTime, ref EndTime, StartTime, EndTime)) {
+                SqlCommand cmd = new SqlCommand("SELECT COUNT(*) FROM Patients", sqlConnection);
+                int id = (int)cmd.ExecuteScalar() + 1;
                 SqlCommand sqlCommand = new SqlCommand($"INSERT INTO Patients(DayOfTheWeek, StartTime, EndTime, FIO, Doctor, Id) " +
                     $"VALUES('{Window_manager.active_window.container.day}', '{StartTime}', '{EndTime}', '{FIO}', '{Window_manager.active_window.container.mail}', '{id}')", sqlConnection);
 
                 if (sqlCommand.ExecuteNonQuery() == 1) {
-                    id++;
                     return true;
                 }
                 else {
@@ -64,14 +65,14 @@ namespace Окна3 {
                 if (Regex.IsMatch(StartTime[0].ToString() + StartTime[1], @"[^0-9\d_]")) IsTrue = false;
                 if (Regex.IsMatch(StartTime[3].ToString() + StartTime[4], @"[^0-9\d_]")) IsTrue = false;
                 if (StartTime[0] != '0' && StartTime[0] != '1') IsTrue = false;
-                if (StartTime[1] == '8' || StartTime[1] == '9') IsTrue = false;
+                if ((StartTime[1] == '8' || StartTime[1] == '9') && StartTime[0] != '0') IsTrue = false;
                 if (StartTime[2] != ':') IsTrue = false;
                 if (StartTime[3] > '6') IsTrue = false;
 
                 if (Regex.IsMatch(EndTime[0].ToString() + EndTime[1], @"[^0-9\d_]")) IsTrue = false;
                 if (Regex.IsMatch(EndTime[3].ToString() + EndTime[4], @"[^0-9\d_]")) IsTrue = false;
                 if (EndTime[0] != '0' && EndTime[0] != '1') IsTrue = false;
-                if (EndTime[1] == '8' || EndTime[1] == '9') IsTrue = false;
+                if ((EndTime[1] == '8' || EndTime[1] == '9') && EndTime[0] != '0') IsTrue = false;
                 if (EndTime[2] != ':') IsTrue = false;
                 if (EndTime[3] > '6') IsTrue = false;
             } catch {

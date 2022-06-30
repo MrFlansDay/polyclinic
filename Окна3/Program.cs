@@ -11,21 +11,8 @@ using System.Text.RegularExpressions;
 namespace Окна3 {
     internal class Program {
         static void Main(string[] args) {
-            /*Window window = new Window(2, 2, 20, 10, "1", new Header());
-            Window_manager.List_Add(window);
-            Window window2 = new Window(2, 2, 15, 10, "2", new Header());
-            Window_manager.List_Add(window2);
-            Window window3 = new Window(2, 2, 15, 10, "3", new Header());
-            Window_manager.List_Add(window3);*/
             Window w;
             w = Window_manager.active_window;
-            /* Action action = () => { Window_manager.List_Remove(w); };
-             Action action1 = () => { 
-                 Window window1 = new Window(2, 2, 15, 10, "3", new Header());
-                 Window_manager.List_Add(window1);
-             };
-             window.Pack(new Button(4, 4, 5, 5, action1), new Button(10, 3, 10, 5, action, "textaaa"));*/
-            // SignUp.registry("sdfsdf", "ldd@mail.ru", "3333", "3333");
 
             Window SignIn = new Window(33, 2, 52, 20, "Authorization");
             Window_manager.List_Add(SignIn);
@@ -192,32 +179,22 @@ namespace Окна3 {
             return getValue;
 
         }
+
+
         static Action Close = () => {
             Environment.Exit(0);
         };
-        /*static Action Delete = () => {
-            sqlConnection.Open();
-
-
-            SqlCommand sqlCommand = new SqlCommand($"DELETE FROM Patients WHERE DayOfTheWeek = '{Window_manager.active_window.container.day}' " +
-                $"AND Doctor = '{Window_manager.active_window.container.mail}'" +
-                $"AND StartTime = {StartTime} AND EndTime = {EndTime}", sqlConnection);
-            sqlCommand.ExecuteNonQuery();
-            sqlConnection.Close();
-        };*/
         private static int TimeAndSurname(string day, Action CloseWindow) {
             sqlConnection.Open();
             SqlCommand sqlCommand = new SqlCommand($"SELECT StartTime, EndTime, FIO FROM Patients WHERE DayOfTheWeek = '{day}' AND Doctor = '{Window_manager.active_window.container.mail}'", sqlConnection);
-            /*SqlDataAdapter adapter = new SqlDataAdapter();
-            DataTable dt = new DataTable();
-            adapter.SelectCommand = sqlCommand;
-            adapter.Fill(dt);*/
+            
             SqlDataReader reader = sqlCommand.ExecuteReader();
             int newY = 0;
             while (reader.Read()) {
                 string StartTime = (string)reader[0];
                 string EndTime = (string)reader[1];
                 string Surname = GetSurname((string)reader[2]);
+                string FIO = (string)reader[2];
 
                 Action Del = GetDelAction(StartTime, CloseWindow, day);
                 Button button = new Button(35, 7 + newY, 5, 2, Del);
@@ -232,18 +209,20 @@ namespace Окна3 {
                 };
 
                 Action TryUpdate = () => {
-                    if (Window_manager.active_window.signUp("Update")) {
+                    if (Window_manager.active_window.signUp("Update", StartTime, EndTime, FIO)) {
                         CloseWindow();
                     }
                     else FalseUp();
                     Window_manager.Draw_windows();
                 };
                 Action UpPatientWindow = () => {
+                    string StartTime1 = StartTime[0].ToString() + StartTime[1] + ':' + StartTime[2] + StartTime[3];
+                    string EndTime1 = EndTime[0].ToString() + EndTime[1] + ':' + EndTime[2] + EndTime[3];
                     Window upPatientWindow = new Window(33, 2, 52, 20, "Registration", Window_manager.active_window.container.FIO, Window_manager.active_window.container.mail, Window_manager.active_window.container.day);
                     Window_manager.List_Remove(Window_manager.active_window);
                     Window_manager.List_Add(upPatientWindow);
-                    upPatientWindow.Pack(new TextField(2, 4, 50, 2, "FIO: ", "text"),
-                        new TextField(2, 7, 50, 2, "Start Time: ", "text"), new TextField(2, 10, 50, 2, "End Time: ", "text"),
+                    upPatientWindow.Pack(new TextField(2, 4, 50, 2, $"Old FIO - {FIO}: ", "text"),
+                        new TextField(2, 7, 50, 2, $"Old Start Time - {StartTime1}: ", "text"), new TextField(2, 10, 50, 2, $"Old End Time - {EndTime1}: ", "text"),
                         new Button(0, 13, 50, 2, TryUpdate, "OK"));
                 };
 
